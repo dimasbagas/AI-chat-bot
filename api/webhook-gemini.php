@@ -159,9 +159,18 @@ $textLower = strtolower($text);
 
 // Logika penyelamat: Bypass state jika user ingin upgrade
 if (str_contains($textLower, "upgrade")) {
+    // Ekstrak email jika ada (format: Email: user@gmail.com)
+    preg_match('/Email: ([\w\.-]+@[\w\.-]+\.\w+)/', $text, $matches);
+    $userEmail = $matches[1] ?? null;
+
     if (str_contains($textLower, "pro")) {
-        setState($from, "confirm_pro");
+        setState($from, "confirm_pro", ["email" => $userEmail]);
         sendWA($FONNTE_KEY, $from, "Halo! Anda memilih Paket Pro 🚀\n\nPilih metode pembayaran:\n1 - Transfer Bank BCA\n2 - QRIS\n3 - GoPay / OVO / Dana\n0 - Batal");
+        exit;
+    }
+    if (str_contains($textLower, "lifetime")) {
+        setState($from, "confirm_lifetime", ["email" => $userEmail]);
+        sendWA($FONNTE_KEY, $from, "Halo! Anda memilih Paket Lifetime ⭐\n\nPilih metode pembayaran:\n1 - Transfer Bank BCA\n2 - QRIS\n3 - GoPay / OVO / Dana\n0 - Batal");
         exit;
     }
 }
@@ -323,19 +332,21 @@ if ($state === "waiting_proof") {
     $plan   = $userState["data"]["plan"] ?? "pro";
     $method = $userState["data"]["method"] ?? "-";
     $msgType = $data["type"] ?? "text";
-    $imageUrl = $data["file"] ?? $data["image"] ?? $data["image_url"] ?? null; 
+    $imageUrl = $data["url"] ?? $data["file"] ?? $data["image"] ?? null; 
 
-    // Jika ada gambar ATAU user konfirmasi lewat teks
+    // Jika ada URL (gambar) ATAU user konfirmasi lewat teks
     if (!empty($imageUrl) || $msgType === "image" || str_contains($textLower, "bukti") || str_contains($textLower, "transfer") || str_contains($textLower, "sudah")) {
         $amount = ($plan === "lifetime") ? 199000 : 30000;
+        $email  = $userState["data"]["email"] ?? "-";
 
         $paymentData = [
             "phone_number" => $from,
             "plan" => $plan,
             "payment_method" => $method,
             "amount" => $amount,
-            "proof_image_url" => $imageUrl,
-            "status" => "pending"
+            "proof_image_url" => $imageUrl ?? "No image provided",
+            "status" => "pending",
+            "notes" => "User Email: $email" // Simpan email di kolom notes
         ];
 
         $ch = curl_init("$SUPABASE_URL/rest/v1/payments");
