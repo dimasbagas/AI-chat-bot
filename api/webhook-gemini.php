@@ -373,11 +373,9 @@ if ($state === "waiting_proof") {
 
         sendWA($FONNTE_KEY, "62895370984358", "Ada pembayaran baru!\nDari: $from\nPaket: $plan\nMetode: $method\nNominal: Rp " . number_format($amount, 0, ",", "."));
     } else {
-        // DEBUG: Tampilkan 1000 karakter agar tidak terpotong
-        $debugInfo = "\n\nDebug Data Full:\n" . substr(json_encode($data), 0, 1000);
         sendWA($FONNTE_KEY, $from,
             "Silakan kirim foto bukti pembayaran Anda 📸\n" .
-            "Jika ingin batal, ketik \"0\"." . $debugInfo
+            "Jika ingin batal, ketik \"0\"."
         );
     }
     exit;
