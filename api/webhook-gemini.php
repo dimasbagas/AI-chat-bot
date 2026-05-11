@@ -335,8 +335,8 @@ if ($state === "waiting_proof") {
     // Deteksi segala kemungkinan field gambar dari Fonnte
     $imageUrl = $data["url"] ?? $data["file"] ?? $data["image"] ?? $data["image_url"] ?? null; 
 
-    // Jika ada URL atau tipe pesan adalah image/file
-    if (!empty($imageUrl) || $msgType === "image" || $msgType === "file" || !empty($data["filename"])) {
+    // Jika ada URL atau tipe pesan adalah image/file atau terdeteksi non-text
+    if (!empty($imageUrl) || $msgType === "image" || $msgType === "file" || str_contains($data["pesan"] ?? "", "non-text")) {
         $amount = ($plan === "lifetime") ? 199000 : 30000;
         $email  = $userState["data"]["email"] ?? "-";
 
@@ -345,9 +345,9 @@ if ($state === "waiting_proof") {
             "plan" => $plan,
             "payment_method" => $method,
             "amount" => $amount,
-            "proof_image_url" => $imageUrl ?? "No image provided",
+            "proof_image_url" => $imageUrl ?? "Check Fonnte Dashboard",
             "status" => "pending",
-            "notes" => "User Email: $email" // Simpan email di kolom notes
+            "notes" => "User Email: $email"
         ];
 
         $ch = curl_init("$SUPABASE_URL/rest/v1/payments");
@@ -367,18 +367,14 @@ if ($state === "waiting_proof") {
         setState($from, "idle");
         sendWA($FONNTE_KEY, $from,
             "Terima kasih! Bukti pembayaran Anda sudah kami terima 🙏\n\n" .
-            "Detail pesanan:\n" .
-            "- Paket : " . strtoupper($plan) . "\n" .
-            "- Metode : $method\n" .
-            "- Nominal : Rp " . number_format($amount, 0, ",", ".") . "\n\n" .
             "Akun Anda akan diaktifkan maksimal 1x24 jam.\n" .
-            "Jika ada pertanyaan, ketik \"menu\" untuk kembali ke menu utama 🙂"
+            "Ketik \"menu\" untuk kembali ke menu utama 🙂"
         );
 
         sendWA($FONNTE_KEY, "62895370984358", "Ada pembayaran baru!\nDari: $from\nPaket: $plan\nMetode: $method\nNominal: Rp " . number_format($amount, 0, ",", "."));
     } else {
-        // DEBUG: Kirim JSON yang diterima agar kita bisa lihat kolomnya
-        $debugInfo = "\n\nDebug Data:\n" . substr(json_encode($data), 0, 200);
+        // DEBUG: Tampilkan 1000 karakter agar tidak terpotong
+        $debugInfo = "\n\nDebug Data Full:\n" . substr(json_encode($data), 0, 1000);
         sendWA($FONNTE_KEY, $from,
             "Silakan kirim foto bukti pembayaran Anda 📸\n" .
             "Jika ingin batal, ketik \"0\"." . $debugInfo
