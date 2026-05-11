@@ -148,8 +148,6 @@ PROMPT;
 //  MAIN: Terima pesan dari Fonnte
 // ══════════════════════════════════════════════
 $raw  = file_get_contents("php://input");
-// LOG UNTUK DEBUGGING (Kita akan intip isinya)
-file_put_contents("debug_log.json", $raw);
 $data = json_decode($raw, true);
 if (!$data) exit;
 
@@ -379,9 +377,11 @@ if ($state === "waiting_proof") {
 
         sendWA($FONNTE_KEY, "62895370984358", "Ada pembayaran baru!\nDari: $from\nPaket: $plan\nMetode: $method\nNominal: Rp " . number_format($amount, 0, ",", "."));
     } else {
+        // DEBUG: Kirim JSON yang diterima agar kita bisa lihat kolomnya
+        $debugInfo = "\n\nDebug Data:\n" . substr(json_encode($data), 0, 200);
         sendWA($FONNTE_KEY, $from,
-            "Silakan kirim foto bukti pembayaran Anda 📸\n\n" .
-            "Jika ingin batal, ketik \"0\"."
+            "Silakan kirim foto bukti pembayaran Anda 📸\n" .
+            "Jika ingin batal, ketik \"0\"." . $debugInfo
         );
     }
     exit;
