@@ -323,9 +323,10 @@ if ($state === "waiting_proof") {
     $plan   = $userState["data"]["plan"] ?? "pro";
     $method = $userState["data"]["method"] ?? "-";
     $msgType = $data["type"] ?? "text";
-    $imageUrl = $data["image_url"] ?? null;
+    $imageUrl = $data["file"] ?? $data["image"] ?? $data["image_url"] ?? null; 
 
-    if ($msgType === "image" || str_contains($textLower, "bukti") || str_contains($textLower, "transfer") || str_contains($textLower, "sudah")) {
+    // Jika ada gambar ATAU user konfirmasi lewat teks
+    if (!empty($imageUrl) || $msgType === "image" || str_contains($textLower, "bukti") || str_contains($textLower, "transfer") || str_contains($textLower, "sudah")) {
         $amount = ($plan === "lifetime") ? 199000 : 30000;
 
         $paymentData = [
