@@ -170,7 +170,7 @@ $menuUtama =
 "Ketik angka pilihanmu 👆";
 
 // ── KEYWORD TRIGGER (dari tombol di website) ──
-$isUpgradeProTrigger      = str_contains($textLower, "upgrade") && str_contains($textLower, "pro");
+$isUpgradeProTrigger      = (str_contains($textLower, "upgrade") && str_contains($textLower, "pro")) || str_contains($textLower, "pro plan");
 $isUpgradeLifetimeTrigger = str_contains($textLower, "upgrade") && str_contains($textLower, "lifetime");
 $isGreeting               = in_array($textLower, ["halo", "hi", "hello", "hai", "mulai", "start", "menu"]);
 
