@@ -156,6 +156,16 @@ $text = trim($data["message"] ?? "");
 if ($from === "" || $text === "") exit;
 
 $textLower = strtolower($text);
+
+// Logika penyelamat: Bypass state jika user ingin upgrade
+if (str_contains($textLower, "upgrade")) {
+    if (str_contains($textLower, "pro")) {
+        setState($from, "confirm_pro");
+        sendWA($FONNTE_KEY, $from, "Halo! Anda memilih Paket Pro 🚀\n\nPilih metode pembayaran:\n1 - Transfer Bank BCA\n2 - QRIS\n3 - GoPay / OVO / Dana\n0 - Batal");
+        exit;
+    }
+}
+
 $userState = getState($from);
 $state     = $userState["state"];
 
