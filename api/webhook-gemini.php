@@ -332,10 +332,11 @@ if ($state === "waiting_proof") {
     $plan   = $userState["data"]["plan"] ?? "pro";
     $method = $userState["data"]["method"] ?? "-";
     $msgType = $data["type"] ?? "text";
-    $imageUrl = $data["url"] ?? $data["file"] ?? $data["image"] ?? null; 
+    // Deteksi segala kemungkinan field gambar dari Fonnte
+    $imageUrl = $data["url"] ?? $data["file"] ?? $data["image"] ?? $data["image_url"] ?? null; 
 
-    // Jika ada URL (gambar) ATAU user konfirmasi lewat teks
-    if (!empty($imageUrl) || $msgType === "image" || str_contains($textLower, "bukti") || str_contains($textLower, "transfer") || str_contains($textLower, "sudah")) {
+    // Jika ada URL atau tipe pesan adalah image/file
+    if (!empty($imageUrl) || $msgType === "image" || $msgType === "file" || !empty($data["filename"])) {
         $amount = ($plan === "lifetime") ? 199000 : 30000;
         $email  = $userState["data"]["email"] ?? "-";
 
