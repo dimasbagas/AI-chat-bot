@@ -148,6 +148,8 @@ PROMPT;
 //  MAIN: Terima pesan dari Fonnte
 // ══════════════════════════════════════════════
 $raw  = file_get_contents("php://input");
+// LOG UNTUK DEBUGGING (Kita akan intip isinya)
+file_put_contents("debug_log.json", $raw);
 $data = json_decode($raw, true);
 if (!$data) exit;
 
