@@ -172,7 +172,8 @@ $menuUtama =
 // ── KEYWORD TRIGGER (dari tombol di website) ──
 $isUpgradeProTrigger      = (str_contains($textLower, "upgrade") && str_contains($textLower, "pro")) || str_contains($textLower, "pro plan");
 $isUpgradeLifetimeTrigger = str_contains($textLower, "upgrade") && str_contains($textLower, "lifetime");
-$isGreeting               = in_array($textLower, ["halo", "hi", "hello", "hai", "mulai", "start", "menu"]);
+$isGreeting               = in_array($textLower, ["halo", "hi", "hello", "hai", "mulai", "start", "menu", "reset"]);
+if ($textLower === "reset") { setState($from, "idle"); sendWA($FONNTE_KEY, $from, "State telah direset ke idle. Ketik menu untuk memulai."); exit; }
 
 // ══════════════════════════════════════════════
 //  ROUTING BERDASARKAN STATE
